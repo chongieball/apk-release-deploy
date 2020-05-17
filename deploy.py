@@ -27,6 +27,9 @@ ZAPIER_ERROR_CODE = 2
 TEMPLATE_ERROR_CODE = 3
 CHANGES_ERROR_CODE = 4
 OUTPUT_FILE_PARSING_ERROR = 5
+TELEGRAM_ERROR_CODE = 6
+DEPLOY_TYPE_TELEGRAM = "telegram"
+DEPLOY_TYPE_EMAIL = "email"
 
 DROPBOX_UPLOAD_ARGS = {
     'path': None,
@@ -240,6 +243,26 @@ def get_email(app_name, app_version, app_url, changes, template_file_path):
     
     return subject.rstrip(), body.rstrip()
 
+def send_message_telegram(bot_code, chat_id, app_name, file_url):
+    ''' send message bot to group chat
+
+    Args:
+        bot_code (str): Bot Code Telegram
+        chat_id (str): Chat ID Group Telegram
+        app_name (str): App Name
+        file_url (str): Url File 
+    
+    Returns:
+        bool: Send success/fail.
+    '''
+
+    message = 'From Project {app_name}. This is APK link: {file_url}'.format(app_name=app_name, file_url=file_url)
+    url_request = 'https://api.telegram.org/bot{bot_code}/sendMessage?chat_id={chat_id}&text={message}'.format(bot_code=bot_code, chat_id=chat_id, message=message)
+
+    r = requests.get(url_request)
+
+    return r.status_code == requests.codes.ok
+
 
 if __name__ == '__main__':
     # Command line arguments
@@ -250,8 +273,11 @@ if __name__ == '__main__':
     parser.add_argument('--template.file', dest='template_file', help='path to email template file', required=True)
     parser.add_argument('--dropbox.token', dest='dropbox_token', help='dropbox access token', required=True)
     parser.add_argument('--dropbox.folder', dest='dropbox_folder', help='dropbox target folder', required=True)
-    parser.add_argument('--zapier.hook', dest='zapier_hook', help='zapier email web hook', required=True)
-    parser.add_argument('--email.to', dest='email_to', help='email recipients', required=True)
+    parser.add_argument('--deploy.type', dest='deploy_type', help='where you want publish (telegram/email)', required=True)
+    parser.add_argument('--zapier.hook', dest='zapier_hook', help='zapier email web hook', required=False)
+    parser.add_argument('--email.to', dest='email_to', help='email recipients', required=False)
+    parser.add_argument('--bot.code', dest='bot_code', help='bot code telegram', required=False)
+    parser.add_argument('--bot.chat_id', dest='chat_id', help='chat id telegram', required=False)
 
     options = parser.parse_args()
 
@@ -271,12 +297,18 @@ if __name__ == '__main__':
     latest_changes = get_changes(options.changelog_file)
     if latest_changes == None:
         exit(CHANGES_ERROR_CODE)
+        
+    # Check deploy type
+    if options.deploy_type == DEPLOY_TYPE_TELEGRAM
+        #send link apk to telegram
+        if not send_message_telegram(options.bot_code, options.chat_id, options.app_name, file_url)
+            exit(TELEGRAM_ERROR_CODE)
+    elif options.deploy_type == DEPLOY_TYPE_EMAIL
+        # Compose email subject and body
+        subject, body = get_email(options.app_name, app_version, file_url, latest_changes, options.template_file)
+        if subject == None or body == None:
+            exit(TEMPLATE_ERROR_CODE)
     
-    # Compose email subject and body
-    subject, body = get_email(options.app_name, app_version, file_url, latest_changes, options.template_file)
-    if subject == None or body == None:
-        exit(TEMPLATE_ERROR_CODE)
-    
-    # Send email with release data
-    if not send_email(options.zapier_hook, options.email_to, subject, body):
-        exit(ZAPIER_ERROR_CODE)
+        # Send email with release data
+        if not send_email(options.zapier_hook, options.email_to, subject, body):
+            exit(ZAPIER_ERROR_CODE)
