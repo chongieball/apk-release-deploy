@@ -301,7 +301,7 @@ if __name__ == '__main__':
     # Check deploy type
     if options.deploy_type == DEPLOY_TYPE_TELEGRAM:
         #send link apk to telegram
-        if not send_message_telegram(options.bot_code, options.chat_id, options.app_name, file_url)
+        if not send_message_telegram(options.bot_code, options.chat_id, options.app_name, file_url):
             exit(TELEGRAM_ERROR_CODE)
     elif options.deploy_type == DEPLOY_TYPE_EMAIL:
         # Compose email subject and body
