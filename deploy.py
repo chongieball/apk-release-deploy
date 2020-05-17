@@ -299,11 +299,11 @@ if __name__ == '__main__':
         exit(CHANGES_ERROR_CODE)
         
     # Check deploy type
-    if options.deploy_type == DEPLOY_TYPE_TELEGRAM
+    if options.deploy_type == DEPLOY_TYPE_TELEGRAM:
         #send link apk to telegram
         if not send_message_telegram(options.bot_code, options.chat_id, options.app_name, file_url)
             exit(TELEGRAM_ERROR_CODE)
-    elif options.deploy_type == DEPLOY_TYPE_EMAIL
+    elif options.deploy_type == DEPLOY_TYPE_EMAIL:
         # Compose email subject and body
         subject, body = get_email(options.app_name, app_version, file_url, latest_changes, options.template_file)
         if subject == None or body == None:
