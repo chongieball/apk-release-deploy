@@ -90,15 +90,9 @@ def upload_to_dropbox(target_file_name, source_file, dropbox_token, dropbox_fold
     # Upload the file
     r = requests.post(DROPBOX_UPLOAD_URL, data=open(source_file, 'rb'), headers=headers)
 
-    if dropbox_token == "":
-        print("token not found")
-        return None
-
     if r.status_code != requests.codes.ok:
         print("Failed: upload file to Dropbox: {errcode}".format(errcode=r.status_code))
         print("Content {content}".format(content=r.content))
-        print("Token {token}".format(token=dropbox_token))
-        print(dropbox_path)
         return None
 
     headers = {'Authorization': 'Bearer ' + dropbox_token,
@@ -201,6 +195,8 @@ def get_changes(change_log_path):
     latest_version_changes = change_log.split('##')[0][:-1]
     latest_version_changes = re.sub('^#.*\n?', '', latest_version_changes, flags=re.MULTILINE)
 
+    print(latest_version_changes)
+
     return latest_version_changes
 
 
@@ -267,6 +263,7 @@ def send_message_telegram(bot_code, chat_id, app_name, file_url):
     url_request = 'https://api.telegram.org/bot{bot_code}/sendMessage?chat_id={chat_id}&text={message}'.format(bot_code=bot_code, chat_id=chat_id, message=message)
 
     r = requests.get(url_request)
+    print(r.content)
 
     return r.status_code == requests.codes.ok
 
