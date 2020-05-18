@@ -93,6 +93,7 @@ def upload_to_dropbox(target_file_name, source_file, dropbox_token, dropbox_fold
     if r.status_code != requests.codes.ok:
         print("Failed: upload file to Dropbox: {errcode}".format(errcode=r.status_code))
         print("Content {content}".format(content=r.content))
+        print("Token {token}".format(token=dropbox_token))
         return None
 
     headers = {'Authorization': 'Bearer ' + dropbox_token,
