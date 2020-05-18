@@ -90,6 +90,10 @@ def upload_to_dropbox(target_file_name, source_file, dropbox_token, dropbox_fold
     # Upload the file
     r = requests.post(DROPBOX_UPLOAD_URL, data=open(source_file, 'rb'), headers=headers)
 
+    if dropbox_token == "":
+        print("token not found")
+        return None
+
     if r.status_code != requests.codes.ok:
         print("Failed: upload file to Dropbox: {errcode}".format(errcode=r.status_code))
         print("Content {content}".format(content=r.content))
