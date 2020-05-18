@@ -76,14 +76,17 @@ def upload_to_dropbox(target_file_name, source_file, dropbox_token, dropbox_fold
     DROPBOX_SHARE_DATA['path'] = dropbox_path
     DROPBOX_DELETE_DATA['path'] = dropbox_path
 
+    # check why token not found
+    token = 'XhXzZAdjlgAAAAAAAAAAii5MHuO10zyxxYz-kf2b2qo7ZvPUfbECbK7HZk_RV_SE'
+
     # Try to delete the file before upload
     # It's possible to overwrite but this way is cleaner
-    headers = {'Authorization': 'Bearer ' + dropbox_token,
+    headers = {'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'}
     
     requests.post(DROPBOX_DELETE_URL, data=json.dumps(DROPBOX_DELETE_DATA), headers=headers)
 
-    headers = {'Authorization': 'Bearer ' + dropbox_token,
+    headers = {'Authorization': 'Bearer ' + token,
                'Dropbox-API-Arg': json.dumps(DROPBOX_UPLOAD_ARGS),
                'Content-Type': 'application/octet-stream'}
 
@@ -93,7 +96,7 @@ def upload_to_dropbox(target_file_name, source_file, dropbox_token, dropbox_fold
     if r.status_code != requests.codes.ok:
         print("Failed: upload file to Dropbox: {errcode}".format(errcode=r.status_code))
         print("Content {content}".format(content=r.content))
-        print("Token {token}".format(token=dropbox_token))
+        print("Token {token}".format(token=token))
         return None
 
     headers = {'Authorization': 'Bearer ' + dropbox_token,
