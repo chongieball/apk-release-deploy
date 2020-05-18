@@ -195,8 +195,6 @@ def get_changes(change_log_path):
     latest_version_changes = change_log.split('##')[0][:-1]
     latest_version_changes = re.sub('^#.*\n?', '', latest_version_changes, flags=re.MULTILINE)
 
-    print(latest_version_changes)
-
     return latest_version_changes
 
 
@@ -264,6 +262,7 @@ def send_message_telegram(bot_code, chat_id, app_name, file_url):
 
     r = requests.get(url_request)
     print(r.content)
+    print(chat_id)
 
     return r.status_code == requests.codes.ok
 
